@@ -2,38 +2,1105 @@
 <html lang="sw">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TrueAlpha Admin Pro | Live System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrueAlpha Play Zone - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <script src="https://unpkg.com/lucide@latest"></script>
-
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f1f5f9; overflow-x: hidden; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        #loader { display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.95); z-index: 100; justify-content: center; align-items: center; flex-direction: column; }
-        .spinner { width: 50px; height: 50px; border: 4px solid rgba(59, 130, 246, 0.1); border-top: 4px solid #3b82f6; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .active-nav { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+        /* ==========================================================================
+           GAMING VIBE & FITSCREEN CSS CONFIGURATION
+           ========================================================================== */
+        :root {
+            --bg-main: #0b0d13;
+            --bg-sidebar: #0f111a;
+            --bg-card: #141824;
+            --bg-input: #1d2333;
+            --purple-glow: #a855f7;
+            --cyan-glow: #06b6d4;
+            --green-accent: #10b981;
+            --red-accent: #ef4444;
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+            --border-color: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100vh;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        /* HIGH-TECH LOADING SCREEN */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, #111424 0%, #05060b 100%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+        }
+
+        .loader-hub {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin-bottom: 25px;
+        }
+
+        .loader-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid transparent;
+            border-top-color: var(--purple-glow);
+            border-bottom-color: var(--cyan-glow);
+            border-radius: 50%;
+            animation: rotateTech 1.5s linear infinite;
+        }
+
+        .loader-inner-circle {
+            position: absolute;
+            width: 70%;
+            height: 70%;
+            top: 15%;
+            left: 15%;
+            border: 3px solid transparent;
+            border-left-color: var(--green-accent);
+            border-right-color: var(--purple-glow);
+            border-radius: 50%;
+            animation: rotateTechRev 1s linear infinite;
+        }
+
+        .loader-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.8rem;
+            color: #fff;
+            animation: pulseGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes rotateTech { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes rotateTechRev { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+        @keyframes pulseGlow { 0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); text-shadow: 0 0 15px var(--purple-glow); } }
+
+        /* MAIN STRUCTURE (FIT TO SCREEN) */
+        .app-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            height: 100%;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+        }
+
+        .logo-area {
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-area i { font-size: 2.2rem; color: var(--purple-glow); text-shadow: 0 0 10px var(--purple-glow); }
+        .logo-text h2 { font-size: 1.3rem; letter-spacing: 1.5px; font-weight: 800; }
+        .logo-text h2 span { color: var(--cyan-glow); }
+        .logo-text p { font-size: 0.7rem; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; }
+
+        .navigation-menu {
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .navigation-menu::-webkit-scrollbar { width: 4px; }
+        .navigation-menu::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item i { font-size: 1.1rem; width: 20px; transition: transform 0.3s; }
+        .nav-item:hover { background-color: rgba(168, 85, 247, 0.08); color: #fff; transform: translateX(5px); }
+        .nav-item:hover i { transform: scale(1.2); color: var(--purple-glow); }
+        .nav-item.active { background: linear-gradient(90deg, #6d28d9 0%, #a855f7 100%); color: #fff; box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3); }
+        .nav-item.active i { color: #fff !important; }
+
+        .sidebar-profile {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            background-color: rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-avatar-wrapper {
+            position: relative;
+            width: 48px;
+            height: 48px;
+        }
+
+        .admin-avatar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--purple-glow), var(--cyan-glow));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: white;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+        }
+
+        .online-ping {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--green-accent);
+            border: 2px solid var(--bg-sidebar);
+            border-radius: 50%;
+            animation: pulsePing 2s infinite;
+        }
+
+        @keyframes pulsePing { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        
+        .profile-details h4 { font-size: 0.9rem; font-weight: 600; color: #fff; }
+        .profile-details p { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* MAIN DASHBOARD CONTENT DISPLAY */
+        .workspace {
+            flex-grow: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* HEADER */
+        .workspace-header {
+            height: 80px;
+            width: 100%;
+            padding: 0 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(15, 17, 26, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        .hamburger { font-size: 1.4rem; cursor: pointer; color: var(--text-muted); display: none; }
+        .header-title h1 { font-size: 1.5rem; font-weight: 700; background: linear-gradient(45deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header-title p { font-size: 0.8rem; color: var(--text-muted); }
+
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        
+        .search-container {
+            position: relative;
+            background-color: var(--bg-input);
+            border-radius: 8px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 280px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+        .search-container:focus-within { border-color: var(--purple-glow); box-shadow: 0 0 8px rgba(168, 85, 247, 0.2); }
+        .search-container input { background: none; border: none; color: #fff; outline: none; width: 100%; font-size: 0.9rem; }
+        .search-container i { color: var(--text-muted); }
+
+        .icon-btn {
+            width: 40px; height: 40px; background-color: var(--bg-input); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: 0.3s;
+        }
+        .icon-btn:hover { background-color: var(--border-color); color: var(--purple-glow); }
+        .icon-btn .alert-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background-color: var(--red-accent); border-radius: 50%; }
+
+        /* VIEW MANAGER (FITSCREEN PANEL SYSTEM) */
+        .workspace-body {
+            flex-grow: 1;
+            width: 100%;
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .dashboard-view {
+            display: none;
+            width: 100%;
+            height: auto;
+            animation: fadeInView 0.4s ease-in-out forwards;
+        }
+
+        .dashboard-view.active-view { display: block; }
+        @keyframes fadeInView { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* CARDS & CONTENT ARCHITECTURE */
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 30px; }
+        
+        .stat-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--purple-glow); opacity: 0; transition: 0.3s;
+        }
+        .stat-card:hover::before { opacity: 1; }
+        .stat-card h3 { font-size: 2rem; font-weight: 700; margin: 5px 0; color: #fff; }
+        .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+
+        .purple-tint { background: rgba(168, 85, 247, 0.1); color: var(--purple-glow); }
+        .cyan-tint { background: rgba(6, 118, 212, 0.1); color: var(--cyan-glow); }
+        .green-tint { background: rgba(16, 185, 129, 0.1); color: var(--green-accent); }
+        .orange-tint { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+
+        .split-layout { display: grid; grid-template-columns: 1.3fr 0.7fr; gap: 25px; margin-bottom: 30px; }
+        @media (max-width: 1024px) { .split-layout { grid-template-columns: 1fr; } }
+
+        .panel-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .panel-header h3 { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.5px; }
+
+        /* DATA TABLES */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        .custom-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .custom-table th { padding: 15px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border-color); }
+        .custom-table td { padding: 15px; border-bottom: 1px solid rgba(30, 41, 59, 0.5); font-size: 0.9rem; color: #cbd5e1; }
+        
+        .game-meta { display: flex; align-items: center; gap: 12px; }
+        .game-table-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: var(--bg-input); border: 1px solid var(--border-color); }
+        
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+        .badge-premium { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+        .badge-free { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        /* ==========================================================================
+           FORMULAS & INPUTS (ADD GAMES VIEW CONFIG)
+           ========================================================================== */
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+
+        .input-block { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+        .input-block label { font-size: 0.85rem; color: #94a3b8; font-weight: 500; }
+        
+        .input-block input, .input-block select, .input-block textarea {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.3s;
+            width: 100%;
+        }
+        .input-block input:focus, .input-block select:focus, .input-block textarea:focus {
+            border-color: var(--purple-glow); box-shadow: 0 0 10px rgba(168, 85, 247, 0.15);
+        }
+
+        /* DYNAMIC LINKS WRAPPER */
+        .dynamic-link-row { display: flex; gap: 10px; margin-bottom: 10px; }
+
+        /* FILE UPLOAD STYLING */
+        .image-uploader-box {
+            border: 2px dashed var(--border-color);
+            background-color: rgba(29, 35, 51, 0.4);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+        }
+        .image-uploader-box:hover { border-color: var(--cyan-glow); background-color: rgba(6, 182, 212, 0.02); }
+        .image-uploader-box i { font-size: 2.5rem; color: var(--text-muted); margin-bottom: 10px; }
+        .image-uploader-box input { position: absolute; width: 100%; height: 100%; top:0; left:0; opacity:0; cursor:pointer; }
+        .preview-render { max-width: 100%; height: 140px; object-fit: contain; display: none; margin-top: 10px; border-radius: 8px; }
+
+        .btn-core {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white; border: none; padding: 14px 28px; border-radius: 8px;
+            font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: 0.3s;
+            display: inline-flex; align-items: center; gap: 10px; justify-content: center;
+        }
+        .btn-core:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4); }
+        
+        .btn-sec { background: var(--bg-input); border: 1px solid var(--border-color); color: #fff; padding: 10px 15px; border-radius: 8px; cursor: pointer; }
+        .btn-sec:hover { background: var(--border-color); }
+
+        /* CONTROL PANEL LISTS */
+        .control-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 0; border-bottom: 1px solid var(--border-color);
+        }
+        .toggle-switch {
+            position: relative; display: inline-block; width: 46px; height: 24px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider-round {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #334155; transition: .4s; border-radius: 24px;
+        }
+        .slider-round:before {
+            position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider-round { background-color: var(--purple-glow); }
+        input:checked + .slider-round:before { transform: translateX(22px); }
+
+        /* SECURITY TERMINAL STYLE */
+        .terminal-log {
+            background-color: #05070f; border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 20px; font-family: 'Courier New', Courier, monospace;
+            height: 300px; overflow-y: auto; color: #34d399; font-size: 0.85rem;
+        }
+        .terminal-line { margin-bottom: 8px; line-height: 1.4; }
+
+        /* RESPONSIVENESS CONFIG */
+        @media (max-width: 768px) {
+            .sidebar { position: absolute; left: -280px; height: 100%; }
+            .sidebar.mobile-open { left: 0; }
+            .hamburger { display: block; }
+        }
     </style>
 </head>
-<body class="min-h-screen">
+<body>
 
     <div id="loader">
-        <div class="spinner mb-4"></div>
-        <p class="text-sm font-bold tracking-widest animate-pulse text-blue-400 uppercase">Inawasiliana na Firebase...</p>
+        <div class="loader-hub">
+            <div class="loader-circle"></div>
+            <div class="loader-inner-circle"></div>
+            <i class="fa-solid fa-bolt loader-icon"></i>
+        </div>
+        <h2 style="font-weight: 900; letter-spacing: 3px;">TRUE<span style="color:var(--cyan-glow)">ALPHA</span> SECURE HUB</h2>
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 8px; letter-spacing: 1px;">INITIALIZING DATABASE MODULES...</p>
     </div>
 
-    <aside class="hidden lg:flex fixed left-0 top-0 h-full w-72 glass m-0 border-r border-white/10 flex-col p-8 z-40">
-        <div class="flex items-center gap-3 mb-12">
-            <div class="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-500/50"><i data-lucide="shield-check" class="text-white"></i></div>
-            <span class="text-2xl font-black italic tracking-tighter">TRUEALPHA</span>
+    <div class="app-container">
+        
+        <aside class="sidebar" id="mainSidebar">
+            <div class="logo-area">
+                <i class="fa-solid fa-circle-nodes"></i>
+                <div class="logo-text">
+                    <h2>TRUE<span>ALPHA</span></h2>
+                    <p>SYSTEM CORE V1</p>
+                </div>
+            </div>
+
+            <nav class="navigation-menu">
+                <div class="nav-item active" data-target="WebsiteDashboard"><i class="fa-solid fa-chart-pie"></i> WebsiteDashboard</div>
+                <div class="nav-item" data-target="AddGames"><i class="fa-solid fa-square-plus"></i> AddGames</div>
+                <div class="nav-item" data-target="Games"><i class="fa-solid fa-gamepad"></i> Games Management</div>
+                <div class="nav-item" data-target="Users"><i class="fa-solid fa-users-gear"></i> Users Overview</div>
+                <div class="nav-item" data-target="AdminDashboard"><i class="fa-solid fa-shield-halved"></i> AdminDashboard</div>
+                <div class="nav-item" data-target="SystemInfo"><i class="fa-solid fa-circle-info"></i> System Info</div>
+                <div class="nav-item" data-target="ControlPanel"><i class="fa-solid fa-sliders"></i> ControlPanel</div>
+                <div class="nav-item" data-target="Security"><i class="fa-solid fa-terminal"></i> Security Logs</div>
+            </nav>
+
+            <div class="sidebar-profile" onclick="switchView('AdminDashboard')">
+                <div class="admin-avatar-wrapper">
+                    <div class="admin-avatar"><i class="fa-solid fa-user-shield"></i></div>
+                    <div class="online-ping"></div>
+                </div>
+                <div class="profile-details">
+                    <h4 id="profileCardName">TrueAlpha HimSelf</h4>
+                    <p>Root Administrator</p>
+                </div>
+            </div>
+        </aside>
+
+        <div class="workspace">
+            
+            <header class="workspace-header">
+                <div class="header-left">
+                    <i class="fa-solid fa-bars-staggered hamburger" id="mobileToggle"></i>
+                    <div class="header-title">
+                        <h1 id="currentViewTitle">Website Dashboard</h1>
+                        <p id="currentViewSub">Real-time stats and overview</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="globalSearchInput" placeholder="Live search across modules...">
+                    </div>
+                    <div class="icon-btn">
+                        <i class="fa-solid fa-bell"></i>
+                        <div class="alert-dot"></div>
+                    </div>
+                    <div class="icon-btn" onclick="switchView('ControlPanel')">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="workspace-body">
+                
+                <div class="dashboard-view active-view" id="WebsiteDashboard">
+                    <div class="grid-4">
+                        <div class="stat-card">
+                            <div><p class="card-title">TOTAL PLATFORM GAMES</p><h3 id="dashTotalGames">0</h3><p class="card-sub">Live in Database</p></div>
+                            <div class="stat-icon purple-tint"><i class="fa-solid fa-gamepad"></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div><p class="card-title">PLATFORM USERS</p><h3 id="dashTotalUsers">1,258</h3><p class="card-sub text-green">+14.2% Growth</p></div>
+                            <div class="stat-icon cyan-tint"><i class="fa-solid fa-users"></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div><p class="card-title">TOTAL REVENUE (TZS)</p><h3 id="dashTotalRevenue">2,450,000</h3><p class="card-sub text-green">Premium Vault</p></div>
+                            <div class="stat-icon green-tint"><i class="fa-solid fa-vault"></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div><p class="card-title">SECURITY STATUS</p><h3>100%</h3><p class="card-sub">Firewall Optimal</p></div>
+                            <div class="stat-icon orange-tint"><i class="fa-solid fa-shield-virus"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="split-layout">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h3>Recently Published Games</h3>
+                                <button class="btn-sec" onclick="switchView('Games')">View Content Base</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Game Meta</th>
+                                            <th>Label/Category</th>
+                                            <th>Access Status</th>
+                                            <th>Value/Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dashboardRecentGamesTable">
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="panel-card">
+                            <div class="panel-header"><h3>Active Server Nodes</h3></div>
+                            <div class="control-row"><span>Firebase Cluster Connection</span><span class="text-green" style="font-weight:700;"><i class="fa-solid fa-circle-check"></i> ONLINE</span></div>
+                            <div class="control-row"><span>Database Storage Limit</span><span class="text-orange">Unlimited (RTDB)</span></div>
+                            <div class="control-row"><span>Payment Webhooks (TZS)</span><span class="badge badge-free">ACTIVE</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-view" id="AddGames">
+                    <div class="panel-card" style="max-width: 900px; margin: 0 auto;">
+                        <div class="panel-header"><h3>Deploy New Game Entity</h3></div>
+                        <form id="gameDeploymentForm">
+                            <div class="form-grid">
+                                <div class="input-block">
+                                    <label>Game Title / Jina la Game</label>
+                                    <input type="text" id="inpGameTitle" placeholder="e.g., Grand Theft Auto V Mobile" required>
+                                </div>
+                                <div class="input-block">
+                                    <label>Game Label / Badge (e.g., New, Popular, Trending)</label>
+                                    <input type="text" id="inpGameLabel" placeholder="e.g., Trending Now">
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="input-block">
+                                    <label>Primary Category</label>
+                                    <select id="inpGameCategory">
+                                        <option value="Action">Action</option>
+                                        <option value="Adventure">Adventure</option>
+                                        <option value="Racing">Racing</option>
+                                        <option value="RPG">RPG / Strategy</option>
+                                        <option value="Sports">Sports</option>
+                                        <option value="Simulation">Simulation</option>
+                                        <option value="Arcade">Arcade</option>
+                                    </select>
+                                </div>
+                                <div class="input-block">
+                                    <label>Access Matrix / Aina ya Game</label>
+                                    <select id="inpGameAccess" onchange="togglePriceBlock(this.value)">
+                                        <option value="Free">Free Game</option>
+                                        <option value="Premium">Premium Game</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="input-block" id="priceInputBlock" style="display: none;">
+                                <label>Premium Price (TZS) / Bei ya Game</label>
+                                <input type="number" id="inpGamePrice" value="2500" placeholder="e.g., 2500">
+                            </div>
+
+                            <div class="input-block">
+                                <label>Game Description / Maelezo Mafupi ya Game</label>
+                                <textarea id="inpGameDesc" rows="3" placeholder="Andika maelezo ya mfumo, sifa za game, n.k..."></textarea>
+                            </div>
+
+                            <div class="input-block">
+                                <label>Game Banner / Cover Image (Ufumo wa Ku-upload Picha)</label>
+                                <div class="image-uploader-box">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    <p>Bonyeza au buruta picha hapa ili kuipakia</p>
+                                    <input type="file" id="inpGameFile" accept="image/*" required>
+                                    <img id="uploadPreview" class="preview-render" alt="Preview">
+                                </div>
+                            </div>
+
+                            <div class="input-block">
+                                <label style="display:flex; justify-content:space-between; width:100%;">
+                                    <span>Download Source Links (Uwezo wa kuweka Link zaidi ya moja)</span>
+                                    <button type="button" class="btn-sec" style="padding:2px 8px; font-size:0.75rem;" onclick="addLinkInputField()">+ Add Link Server</button>
+                                </label>
+                                <div id="dynamicLinksContainer">
+                                    <div class="dynamic-link-row">
+                                        <input type="url" class="game-download-url" placeholder="Main Download Server URL (Link ya Kwanza)" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 25px;">
+                                <button type="submit" class="btn-core"><i class="fa-solid fa-circle-check"></i> Write to Firebase Database Cluster</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="dashboard-view" id="Games">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3>Live Game Catalog Database</h3>
+                            <button class="btn-core" style="padding:8px 15px; font-size:0.85rem;" onclick="switchView('AddGames')">+ Add Entity</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>Game</th>
+                                        <th>Category</th>
+                                        <th>Access</th>
+                                        <th>Price</th>
+                                        <th>Download Servers</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fullCatalogTableBody">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-view" id="Users">
+                    <div class="panel-card">
+                        <div class="panel-header"><h3>Registered Platform Gamers</h3></div>
+                        <div class="table-responsive">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>UID</th>
+                                        <th>Username/GamerTag</th>
+                                        <th>Status</th>
+                                        <th>Tier Group</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>#UA-9021</td><td>Menezes_Gamer</td><td><span class="text-green">Online</span></td><td><span class="badge badge-premium">Premium User</span></td><td><button class="btn-sec" style="color:var(--red-accent); border-color:rgba(239,68,68,0.2);" onclick="alert('User Revoked')">Revoke Account</button></td></tr>
+                                    <tr><td>#UA-8492</td><td>Alpha_King</td><td><span class="text-muted">Offline</span></td><td><span class="badge badge-free">Free Tier</span></td><td><button class="btn-sec" style="color:var(--purple-glow);" onclick="alert('User upgraded to premium storage cluster')">Grant Premium Access</button></td></tr>
+                                    <tr><td>#UA-7721</td><td>Kichwa_Chama</td><td><span class="text-green">Online</span></td><td><span class="badge badge-premium">Premium User</span></td><td><button class="btn-sec" style="color:var(--red-accent); border-color:rgba(239,68,68,0.2);" onclick="alert('User Revoked')">Revoke Account</button></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-view" id="AdminDashboard">
+                    <div class="form-grid">
+                        <div class="panel-card">
+                            <div class="panel-header"><h3>Root Administrator Profile</h3></div>
+                            <div style="text-align:center; margin-bottom: 25px;">
+                                <div class="admin-avatar" style="width: 90px; height: 90px; font-size: 2.5rem; margin: 0 auto 15px auto;"><i class="fa-solid fa-user-shield"></i></div>
+                                <h2 style="color: #fff;" id="profileMainName">TrueAlpha HimSelf</h2>
+                                <p style="color: var(--cyan-glow); font-size: 0.85rem; font-weight: bold; letter-spacing: 1px;">SUPREME ROOT CONFIGURATOR</p>
+                            </div>
+                            <form id="adminProfileForm">
+                                <div class="input-block">
+                                    <label>Administrator Custom Identifier Display Jina</label>
+                                    <input type="text" id="adminDisplayNameInp" value="TrueAlpha HimSelf">
+                                </div>
+                                <div class="input-block">
+                                    <label>Associated Communication Channel (Phone/WhatsApp)</label>
+                                    <input type="text" value="+255 651 675 994" readonly style="opacity: 0.6; cursor: not-allowed;">
+                                </div>
+                                <button type="submit" class="btn-core">Commit Changes Locally</button>
+                            </form>
+                        </div>
+
+                        <div class="panel-card">
+                            <div class="panel-header"><h3>Node Verification Keys</h3></div>
+                            <div class="input-block">
+                                <label>Firebase Cluster Core Project Identifier</label>
+                                <input type="text" value="truealpha-play-zone" readonly style="background-color:rgba(0,0,0,0.2);">
+                            </div>
+                            <div class="input-block">
+                                <label>Authentication Vault Access API Token</label>
+                                <input type="password" value="AIzaSyDGR_Ej-g6-u3SLlRL_W8_FOsezTKXfpkI" readonly style="background-color:rgba(0,0,0,0.2);">
+                            </div>
+                            <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.4;">Hizi ni kodi zako zilizosimbwa za Firebase. Mfumo wako una ulinzi wa TLS 1.3 encryption unapoandika data kwenye seva kuu.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-view" id="SystemInfo">
+                    <div class="panel-card">
+                        <div class="panel-header"><h3>System Architecture Details</h3></div>
+                        <div class="control-row"><span>Framework Base Environment</span><span style="font-family:monospace;">HTML5 / CSS Grid Framework / Vanilla EcmaScript 6</span></div>
+                        <div class="control-row"><span>Remote Database Engine</span><span style="font-family:monospace; color:var(--cyan-glow);">Google Firebase Realtime Database Engine</span></div>
+                        <div class="control-row"><span>SDK Loading Module Protocol</span><span style="font-family:monospace;">ES6 Import Vectors via gstatic CDN</span></div>
+                        <div class="control-row"><span>Analytics Execution Node</span><span style="font-family:monospace;">Google Analytics (G-9HZP5J137Y) Attached</span></div>
+                        <div class="control-row"><span>System Render Target</span><span style="color:var(--green-accent);">100% Fit-to-Screen Adaptive Canvas</span></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-view" id="ControlPanel">
+                    <div class="form-grid">
+                        <div class="panel-card">
+                            <div class="panel-header"><h3>Premium Access & Payments Configuration</h3></div>
+                            <div class="input-block">
+                                <label>Standard Unified Premium Fee For App Access (TZS)</label>
+                                <input type="text" value="2500" id="premiumGlobalPrice">
+                            </div>
+                            <div class="control-row">
+                                <div>
+                                    <strong>Enforce Instant Paywall</strong>
+                                    <p style="font-size:0.75rem; color:var(--text-muted);">Watumiaji lazima walipe kwanza kabla ya kufungua faili lolote la premium.</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </div>
+                            <div class="control-row">
+                                <div>
+                                    <strong>Send Payment Verification Webhook Alerts</strong>
+                                    <p style="font-size:0.75rem; color:var(--text-muted);">Pata taarifa za malipo papo hapo.</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider-round"></span>
+                                </label>
+                            </div>
+                            <div style="margin-top:20px;">
+                                <button type="button" class="btn-core" onclick="alert('Mifumo ya malipo imehifadhiwa kikamilifu!')">Commit Matrix Configuration</button>
+                            </div>
+                        </div>
+
+                        <div class="panel-card">
+                            <div class="panel-header"><h3>Platform Maintenance Node</h3></div>
+                            <div class="control-row">
+                                <div>
+                                    <strong>Global Server Maintenance Lockout</strong>
+                                    <p style="font-size:0.75rem; color:var(--text-muted);">Funga tovuti nzima kwa watumiaji kwa ajili ya matengenezo.</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="maintenanceToggle">
+                                    <span class="slider-round"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-view" id="Security">
+                    <div class="panel-card">
+                        <div class="panel-header"><h3>Real-time Encryption Security Monitor</h3></div>
+                        <div class="terminal-log" id="securityTerminalLog">
+                            <div class="terminal-line">[SYSTEM] Terminal instance securely spawned. Welcome TrueAlpha HimSelf.</div>
+                            <div class="terminal-line">[FIREWALL] SSL Handshake checked successfully with Google Firebase Cloud Clusters.</div>
+                            <div class="terminal-line">[OK] Listening to dynamic data mutations across reference nodes...</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
-        <nav class="space-y-4">
+    </div>
+
+    <script type="module">
+        // Import standard libraries from Google CDN
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Firebase configuration data
+        const firebaseConfig = {
+            apiKey: "AIzaSyDGR_Ej-g6-u3SLlRL_W8_FOsezTKXfpkI",
+            authDomain: "truealpha-play-zone.firebaseapp.com",
+            databaseURL: "https://truealpha-play-zone-default-rtdb.firebaseio.com",
+            projectId: "truealpha-play-zone",
+            storageBucket: "truealpha-play-zone.firebasestorage.app",
+            messagingSenderId: "622404201415",
+            appId: "1:622404201415:web:bcd6663164ae53905b87e2",
+            measurementId: "G-9HZP5J137Y"
+        };
+
+        // Initialize instances
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+
+        // Security logger tracker function
+        function pushLog(message) {
+            const term = document.getElementById('securityTerminalLog');
+            if(term) {
+                const timestamp = new Date().toLocaleTimeString();
+                term.innerHTML += `<div class="terminal-line">[${timestamp}] ${message}</div>`;
+                term.scrollTop = term.scrollHeight;
+            }
+        }
+
+        // Variable holding base64 strings of binary image file streams uploaded
+        let base64ImageString = "";
+
+        // Read uploaded files into binary base64 context strings
+        const fileInput = document.getElementById('inpGameFile');
+        if(fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if(file) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        base64ImageString = evt.target.result;
+                        const previewImg = document.getElementById('uploadPreview');
+                        previewImg.src = base64ImageString;
+                        previewImg.style.display = "block";
+                        pushLog(`Picha iliyochaguliwa imesomwa kwa ufanisi (${(file.size/1024).toFixed(1)} KB).`);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Write and deployment event listener handler for new entities
+        const deploymentForm = document.getElementById('gameDeploymentForm');
+        if(deploymentForm) {
+            deploymentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const title = document.getElementById('inpGameTitle').value;
+                const label = document.getElementById('inpGameLabel').value || "New";
+                const cat = document.getElementById('inpGameCategory').value;
+                const access = document.getElementById('inpGameAccess').value;
+                const price = access === 'Premium' ? document.getElementById('inpGamePrice').value : "0";
+                const desc = document.getElementById('inpGameDesc').value || "";
+
+                // Gather links from dynamic inputs array
+                const linkElements = document.querySelectorAll('.game-download-url');
+                let linksArr = [];
+                linkElements.forEach(el => {
+                    if(el.value.trim() !== "") linksArr.push(el.value.trim());
+                });
+
+                if(!base64ImageString) {
+                    alert("Tafadhali pakia picha ya game kwanza!");
+                    return;
+                }
+
+                pushLog(`Inatuma data ya game: "${title}" kwenda kwenye database node cluster...`);
+
+                const gameClusterRef = ref(db, 'games');
+                const newGamePushRef = push(gameClusterRef);
+
+                set(newGamePushRef, {
+                    title: title,
+                    label: label,
+                    category: cat,
+                    access: access,
+                    price: price,
+                    description: desc,
+                    image: base64ImageString,
+                    downloadLinks: linksArr,
+                    timestamp: new Date().toISOString()
+                }).then(() => {
+                    pushLog(`SUCCESS: Game lililojulikana kama "${title}" limehifadhiwa kiotomatiki.`);
+                    alert(`Entity "${title}" deployed globally!`);
+                    deploymentForm.reset();
+                    document.getElementById('uploadPreview').style.display = "none";
+                    base64ImageString = "";
+                    // Reset to first view tab naturally
+                    window.switchView('WebsiteDashboard');
+                }).catch(err => {
+                    pushLog(`CRITICAL ERROR: Imeshindwa kuandika data. Maelezo: ${err.message}`);
+                    alert("Database Error: " + err.message);
+                });
+            });
+        }
+
+        // Live Real-time listener feeding UI state matrices across blocks
+        const databaseLiveRef = ref(db, 'games');
+        onValue(databaseLiveRef, (snapshot) => {
+            const records = snapshot.val();
+            const dashTable = document.getElementById('dashboardRecentGamesTable');
+            const catalogTable = document.getElementById('fullCatalogTableBody');
+            const totalGamesInp = document.getElementById('dashTotalGames');
+
+            // Clear buffers cleanly
+            dashTable.innerHTML = "";
+            catalogTable.innerHTML = "";
+
+            if(records) {
+                const keys = Object.keys(records);
+                totalGamesInp.innerText = keys.length;
+                pushLog(`Data synchronized. Jumla ya magame yaliyosomwa: ${keys.length}`);
+
+                let counter = 0;
+                // Reverse iterate arrays to fetch newly added entries first
+                for(let i = keys.length - 1; i >= 0; i--) {
+                    const key = keys[i];
+                    const item = records[key];
+                    counter++;
+
+                    const badgeMarkup = item.access === 'Premium' ? `<span class="badge badge-premium">Premium</span>` : `<span class="badge badge-free">Free</span>`;
+                    const priceValueFormatted = item.access === 'Premium' ? `${parseFloat(item.price).toLocaleString()} TZS` : "0 TZS";
+
+                    // Populate Dashboard Panel Sample table matrix (Max 5 items for visual layout health)
+                    if(counter <= 5) {
+                        const rowDash = `
+                            <tr>
+                                <td>
+                                    <div class="game-meta">
+                                        <img src="${item.image || ''}" class="game-table-img" alt="Cover">
+                                        <div>
+                                            <strong style="display:block; color:#fff;">${item.title}</strong>
+                                            <small style="color:var(--text-muted); font-size:0.75rem;">${item.category}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span style="color:var(--cyan-glow); font-weight:600;">${item.label}</span></td>
+                                <td>${badgeMarkup}</td>
+                                <td><span style="font-family:monospace; font-weight:bold;">${priceValueFormatted}</span></td>
+                            </tr>
+                        `;
+                        dashTable.innerHTML += rowDash;
+                    }
+
+                    // Populate Full Comprehensive Catalog Panel Table
+                    let linksListStrings = "";
+                    if(item.downloadLinks && Array.isArray(item.downloadLinks)) {
+                        item.downloadLinks.forEach((l, idx) => {
+                            linksListStrings += `<a href="${l}" target="_blank" style="color:var(--cyan-glow); text-decoration:underline; font-size:0.8rem; display:block; margin-bottom:2px;">Server Link #${idx+1}</a>`;
+                        });
+                    } else {
+                        linksListStrings = `<span style="color:var(--text-muted);">No Links Embedded</span>`;
+                    }
+
+                    const rowCatalog = `
+                        <tr id="row_${key}">
+                            <td>
+                                <div class="game-meta">
+                                    <img src="${item.image || ''}" class="game-table-img" alt="Cover">
+                                    <div>
+                                        <strong style="display:block; color:#fff;">${item.title}</strong>
+                                        <small style="color:var(--text-muted); font-size:0.75rem;">${item.description.substring(0, 40)}...</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${item.category}</td>
+                            <td>${badgeMarkup}</td>
+                            <td><span style="font-family:monospace; font-weight:bold; color:var(--green-accent);">${priceValueFormatted}</span></td>
+                            <td>${linksListStrings}</td>
+                            <td>
+                                <button class="btn-sec delete-game-trigger" data-id="${key}" style="color:var(--red-accent); padding:5px 10px; font-size:0.8rem; border-color:rgba(239,68,68,0.2);">
+                                    <i class="fa-solid fa-trash-can"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    catalogTable.innerHTML += rowCatalog;
+                }
+
+                // Attach dynamically built event handler array interceptors to delete entry buttons safely
+                document.querySelectorAll('.delete-game-trigger').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const targetedId = this.getAttribute('data-id');
+                        if(confirm("Je, una uhakika unataka kufuta kabisa game hili kutoka kwenye database yako ya Firebase?")) {
+                            remove(ref(db, `games/${targetedId}`)).then(() => {
+                                pushLog(`Entity key execution run handled successfully for ID entry: ${targetedId}`);
+                                alert("Entity completely purged from structural array nodes.");
+                            });
+                        }
+                    });
+                });
+
+            } else {
+                totalGamesInp.innerText = "0";
+                dashTable.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Database node context cluster returns empty array rows.</td></tr>`;
+                catalogTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No records found matching reference path tree.</td></tr>`;
+            }
+
+            // High Tech Layer Loading Dismissal Trigger once initial fetch lifecycle fulfills
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                if(loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.visibility = 'hidden', 600);
+                }
+            }, 800);
+        });
+
+        // Expose function routing configurations directly inside module wrapper scope mappings to safely execute window context hooks
+        window.switchView = function(viewTargetId) {
+            document.querySelectorAll('.dashboard-view').forEach(view => {
+                view.classList.remove('active-view');
+            });
+            
+            const selectedView = document.getElementById(viewTargetId);
+            if(selectedView) {
+                selectedView.classList.add('active-view');
+                
+                // Format UI text contents matching navigational tracking indices
+                document.getElementById('currentViewTitle').innerText = viewTargetId.replace(/([A-Z])/g, ' $1').trim();
+                document.getElementById('currentViewSub').innerText = `Ukurasa huru wa usimamizi wa ${viewTargetId}`;
+            }
+
+            // Sync structural menu button visual indicators active mappings
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if(item.getAttribute('data-target') === viewTargetId) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Close dynamic drawer handles when responsive constraints execute
+            const sideEl = document.getElementById('mainSidebar');
+            if(sideEl) sideEl.classList.remove('mobile-open');
+        };
+
+    </script>
+
+    <script>
+        // Tab switching events binding handlers natively
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const destination = this.getAttribute('data-target');
+                if(destination && typeof window.switchView === 'function') {
+                    window.switchView(destination);
+                }
+            });
+        });
+
+        // Inline condition wrapper showing premium price input logic tree conditionally
+        function togglePriceBlock(selectedValue) {
+            const priceBlock = document.getElementById('priceInputBlock');
+            if(priceBlock) {
+                priceBlock.style.display = selectedValue === 'Premium' ? 'block' : 'none';
+            }
+        }
+
+        // Add additional server strings download link inputs array logic blocks row arrays
+        function addLinkInputField() {
+            const container = document.getElementById('dynamicLinksContainer');
+            const row = document.createElement('div');
+            row.className = 'dynamic-link-row';
+            row.innerHTML = `
+                <input type="url" class="game-download-url" placeholder="Alternative Mirror Download Link / Server">
+                <button type="button" class="btn-sec" style="color:var(--red-accent);" onclick="this.parentElement.remove()">X</button>
+            `;
+            container.appendChild(row);
+        }
+
+        // Profile metadata configuration override submit processing logic
+        document.getElementById('adminProfileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const alteredNameValue = document.getElementById('adminDisplayNameInp').value;
+            if(alteredNameValue.trim() !== "") {
+                document.getElementById('profileCardName').innerText = alteredNameValue;
+                document.getElementById('profileMainName').innerText = alteredNameValue;
+                alert("Profile configuration updated locally inside browser cache frames!");
+            }
+        });
+
+        // Mobile navigational slider toggle capture action
+        const mobToggle = document.getElementById('mobileToggle');
+        if(mobToggle) {
+            mobToggle.addEventListener('click', function() {
+                document.getElementById('mainSidebar').classList.toggle('mobile-open');
+            });
+        }
+
+        // Live filtration parsing mechanics over dynamic collection catalog sets data entries
+        document.getElementById('globalSearchInput').addEventListener('keyup', function() {
+            const stringFilter = this.value.toLowerCase();
+            const targetRows = document.querySelectorAll('.custom-table tbody tr');
+            
+            targetRows.forEach(row => {
+                const combinedRowDataText = row.textContent.toLowerCase();
+                row.style.display = combinedRowDataText.includes(stringFilter) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
             <button onclick="switchTab('dash')" id="btn-dash" class="nav-link w-full flex items-center gap-4 p-4 rounded-2xl active-nav transition-all">
                 <i data-lucide="layout-grid"></i> Dashboard
             </button>
