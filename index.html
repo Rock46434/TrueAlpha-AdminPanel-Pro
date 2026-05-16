@@ -950,38 +950,50 @@
                     }
 
                     // Populate Full Comprehensive Catalog Panel Table
-                    let linksListStrings = "";
-                    if(item.downloadLinks && Array.isArray(item.downloadLinks)) {
-                        item.downloadLinks.forEach((l, idx) => {
-                            linksListStrings += `<a href="${l}" target="_blank" style="color:var(--cyan-glow); text-decoration:underline; font-size:0.8rem; display:block; margin-bottom:2px;">Server Link #${idx+1}</a>`;
-                        });
-                    } else {
-                        linksListStrings = `<span style="color:var(--text-muted);">No Links Embedded</span>`;
-                    }
+let linksListStrings = "";
 
-                    const rowCatalog = `
-                        <tr id="row_${key}">
-                            <td>
-                                <div class="game-meta">
-                                    <img src="${item.image || ''}" class="game-table-img" alt="Cover">
-                                    <div>
-                                        <strong style="display:block; color:#fff;">${item.title}</strong>
-                                        <small style="color:var(--text-muted); font-size:0.75rem;">${item.description.substring(0, 40)}...</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>${item.category}</td>
-                            <td>${badgeMarkup}</td>
-                            <td><span style="font-family:monospace; font-weight:bold; color:var(--green-accent);">${priceValueFormatted}</span></td>
-                            <td>${linksListStrings}</td>
-                            <td>
-                                <button class="btn-sec delete-game-trigger" data-id="${key}" style="color:var(--red-accent); padding:5px 10px; font-size:0.8rem; border-color:rgba(239,68,68,0.2);">
-                                    <i class="fa-solid fa-trash-can"></i> Delete
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    catalogTable.innerHTML += rowCatalog;
+// Tunakagua kama kuna Array ya links (item.links)
+if (item.links && Array.isArray(item.links) && item.links.length > 0) {
+    item.links.forEach((linkObj) => {
+        // Inatengeneza vibeti vidogo vya zambarau kwa kila link (Mfano: APK, OBB)
+        linksListStrings += `<span style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.3); padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; display: inline-block; margin-right: 4px; margin-bottom: 4px;">🔗 ${linkObj.label}</span>`;
+    });
+} else if (item.downloadUrl) {
+    // Kama ni game la zamani lenye link moja tu ya kawaida
+    linksListStrings = `<span style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.3); padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; display: inline-block;">🔗 Link</span>`;
+} else {
+    // Kama hakuna link kabisa
+    linksListStrings = `<span style="color: var(--text-muted); font-size: 12px; font-style: italic;">No Links Embedded</span>`;
+}
+
+const rowCatalog = `
+    <tr id="row_${key}">
+        <td>
+            <div class="game-meta">
+                <img src="${item.image || ''}" class="game-table-img" alt="">
+                <div>
+                    <strong style="display:block; color:#fff;">${item.title}</strong>
+                    <small style="color:var(--text-muted); font-size:0.75rem;">${key}</small>
+                </div>
+            </div>
+        </td>
+        <td>${item.category || 'Action'}</td>
+        <td>${badgeMarkup}</td>
+        <td style="font-family:monospace; font-weight:bold;">${item.price ? 'TZS ' + parseFloat(item.price).toLocaleString() : '0 TZS'}</td>
+        <td>
+            <div style="display: flex; flex-wrap: wrap; max-width: 200px;">
+                ${linksListStrings}
+            </div>
+        </td>
+        <td>
+            <button class="btn-sec delete-game-trigger" data-id="${key}">
+                <i class="fa-solid fa-trash-can"></i> Delete
+            </button>
+        </td>
+    </tr>
+`;
+
+catalogTable.innerHTML += rowCatalog;
                 }
 
                 // Attach dynamically built event handler array interceptors to delete entry buttons safely
