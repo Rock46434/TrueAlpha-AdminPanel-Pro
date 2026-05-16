@@ -1341,27 +1341,56 @@ function collectDownloadLinks() {
             e.preventDefault();
             loader.style.display = "flex";
 
-            const newGame = {
-                name: document.getElementById('gName').value,
-                link: document.getElementById('gUrl').value,
-                category: document.getElementById('gCat').value,
-                thumbnail: document.getElementById('gThumb').value || "https://via.placeholder.com/150",
-                timestamp: new Date().toLocaleString()
-            };
+            const downloadLinks = [];
+    
+    // Inatafuta kama kuna input zenye class ya dynamic links (APK, OBB, nk)
+    const linkInputs = document.querySelectorAll('.dynamic-link-input');
+    const labelInputs = document.querySelectorAll('.dynamic-label-input');
 
-            try {
-                const gameRef = push(ref(db, 'games/'));
-                await set(gameRef, newGame);
-                setTimeout(() => {
-                    loader.style.display = "none";
-                    alert("Kazi kamilifu! Game lipo Live.");
-                    document.getElementById('gameForm').reset();
-                    switchTab('manage');
-                }, 1000);
-            } catch (err) {
-                loader.style.display = "none";
-                alert("Hitilafu: " + err.message);
+    if (linkInputs.length > 0) {
+        linkInputs.forEach((input, index) => {
+            const urlValue = input.value.trim();
+            const labelValue = labelInputs[index] ? labelInputs[index].value.trim() : `Server ${index + 1}`;
+            if (urlValue !== "") {
+                downloadLinks.push({ label: labelValue, url: urlValue });
             }
+        });
+    } else {
+        // Kama bado hujafanya form iwe dynamic, inachukua ile link moja ya kawaida
+        const singleUrl = document.getElementById('gUrl').value.trim();
+        if (singleUrl !== "") {
+            downloadLinks.push({ label: 'Download Now', url: singleUrl });
+        }
+    }
+
+    // ==========================================
+    // MUUNDO MPYA WA KUSAVE KWENDA FIREBASE
+    // ==========================================
+    const newGame = {
+        title: document.getElementById('gName').value,       // Ili iendane na jedwali letu
+        name: document.getElementById('gName').value,        // Tunaiacha kwa ajili ya usalama wa kodi za zamani
+        category: document.getElementById('gCat').value,
+        image: document.getElementById('gThumb').value || "",// Ili iendane na item.image kwenye table
+        thumbnail: document.getElementById('gThumb').value || "",
+        price: document.getElementById('gPrice') ? document.getElementById('gPrice').value : 0, // Hakikisha una input ya bei kama ipo
+        links: downloadLinks,                                // Array safi ya links na lebo zake (APK, OBB, nk.)
+        timestamp: new Date().toLocaleString()
+    };
+
+    try {
+        const gameRef = push(ref(db, 'games/'));
+        await set(gameRef, newGame);
+        
+        setTimeout(() => {
+            loader.style.display = "none";
+            alert("Kazi kamilifu! Game lipo Live.");
+            document.getElementById('gameForm').reset();
+            switchTab('manage');
+        }, 1000);
+    } catch (err) {
+        loader.style.display = "none";
+        alert("Hitilafu: " + err.message);
+        }
         });
 
         // Global Delete Function
