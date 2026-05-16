@@ -1061,16 +1061,34 @@
         }
 
         // Add additional server strings download link inputs array logic blocks row arrays
-        function addLinkInputField() {
-            const container = document.getElementById('dynamicLinksContainer');
-            const row = document.createElement('div');
-            row.className = 'dynamic-link-row';
-            row.innerHTML = `
-                <input type="url" class="game-download-url" placeholder="Alternative Mirror Download Link / Server">
-                <button type="button" class="btn-sec" style="color:var(--red-accent);" onclick="this.parentElement.remove()">X</button>
-            `;
-            container.appendChild(row);
+        window.addLinkRow = function() {
+        const container = document.getElementById('links-container');
+        const row = document.createElement('div');
+        row.className = 'link-input-row';
+        row.style.display = 'flex';
+        row.style.gap = '10px';
+        row.style.marginBottom = '10px';
+        row.innerHTML = `
+            <select class="link-label" style="flex:1; padding:10px; background:#1f2937; border:1px solid #374151; border-radius:6px; color:#fff;">
+                <option value="APK">APK Link</option>
+                <option value="OBB">OBB Link</option>
+                <option value="DATA">DATA Link</option>
+                <option value="FULL GAME">FULL GAME</option>
+            </select>
+            <input type="text" class="link-url" placeholder="https://..." style="flex:3; padding:10px; background:#1f2937; border:1px solid #374151; border-radius:6px; color:#fff;">
+            <button type="button" onclick="removeLinkRow(this)" style="background:#ef4444; color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer;">X</button>
+        `;
+        container.appendChild(row);
+    };
+
+    window.removeLinkRow = function(btn) {
+        const row = btn.parentElement;
+        if(document.querySelectorAll('.link-input-row').length > 1) {
+            row.remove();
+        } else {
+            alert("Lazima uweke angalau link moja ya mchezo!");
         }
+    };
 
         // Profile metadata configuration override submit processing logic
         document.getElementById('adminProfileForm').addEventListener('submit', function(e) {
