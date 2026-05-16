@@ -575,6 +575,8 @@
                                         <option value="Sports">Sports</option>
                                         <option value="Simulation">Simulation</option>
                                         <option value="Arcade">Arcade</option>
+                                        <option value="Emulators">Emulators</option>
+                                        <option value="Fighting">Fighting</option>
                                     </select>
                                 </div>
                                 <div class="input-block">
@@ -1061,34 +1063,50 @@
         }
 
         // Add additional server strings download link inputs array logic blocks row arrays
-        window.addLinkRow = function() {
-        const container = document.getElementById('links-container');
-        const row = document.createElement('div');
-        row.className = 'link-input-row';
-        row.style.display = 'flex';
-        row.style.gap = '10px';
-        row.style.marginBottom = '10px';
-        row.innerHTML = `
-            <select class="link-label" style="flex:1; padding:10px; background:#1f2937; border:1px solid #374151; border-radius:6px; color:#fff;">
-                <option value="APK">APK Link</option>
-                <option value="OBB">OBB Link</option>
-                <option value="DATA">DATA Link</option>
-                <option value="FULL GAME">FULL GAME</option>
-            </select>
-            <input type="text" class="link-url" placeholder="https://..." style="flex:3; padding:10px; background:#1f2937; border:1px solid #374151; border-radius:6px; color:#fff;">
-            <button type="button" onclick="removeLinkRow(this)" style="background:#ef4444; color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer;">X</button>
-        `;
-        container.appendChild(row);
-    };
+        function addLinkRow() {
+    const wrapper = document.getElementById('dynamic-links-wrapper');
+    const newRow = document.createElement('div');
+    newRow.className = 'link-row';
+    newRow.style = 'display: flex; gap: 10px; margin-bottom: 10px;';
+    
+    newRow.innerHTML = `
+        <input type="text" class="link-label" placeholder="Mfano: APK, OBB, DATA" style="flex: 1; padding: 8px;" required>
+        <input type="url" class="link-url" placeholder="Weka URL ya kupakulia hapa" style="flex: 2; padding: 8px;" required>
+        <button type="button" onclick="removeLinkRow(this)" style="background: #ff4d4d; color: white; border: none; padding: 8px 12px; cursor: pointer;">X</button>
+    `;
+    wrapper.appendChild(newRow);
+}
 
-    window.removeLinkRow = function(btn) {
-        const row = btn.parentElement;
-        if(document.querySelectorAll('.link-input-row').length > 1) {
-            row.remove();
-        } else {
-            alert("Lazima uweke angalau link moja ya mchezo!");
+// Kazi ya kufuta mstari ulioongezwa
+function removeLinkRow(button) {
+    const row = button.parentElement;
+    const wrapper = document.getElementById('dynamic-links-wrapper');
+    if (wrapper.children.length > 1) {
+        row.remove();
+    } else {
+        alert("Ni lazima uweke angalau link moja!");
+    }
+}
+
+// Jinsi ya kukusanya data hizi kabla ya kutuma Firebase (Iweke hii ndani ya function yako ya Save/Submit Game)
+function collectDownloadLinks() {
+    const linksArray = [];
+    const rows = document.querySelectorAll('.link-row');
+    
+    rows.forEach(row => {
+        const label = row.querySelector('.link-label').value.trim();
+        const url = row.querySelector('.link-url').value.trim();
+        
+        if (label && url) {
+            linksArray.push({
+                label: label, // Itahifadhi kama "APK", "OBB" nk.
+                url: url
+            });
         }
-    };
+    });
+    
+    return linksArray; // Hii object ndio unaipush Firebase (mfano: downloadLinks: linksArray)
+        }
 
         // Profile metadata configuration override submit processing logic
         document.getElementById('adminProfileForm').addEventListener('submit', function(e) {
