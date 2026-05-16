@@ -606,18 +606,21 @@
                                 </div>
                             </div>
 
-                            <div class="input-block">
-                                <label style="display:flex; justify-content:space-between; width:100%;">
-                                    <span>Download Source Links (Uwezo wa kuweka Link zaidi ya moja)</span>
-                                    <button type="button" class="btn-sec" style="padding:2px 8px; font-size:0.75rem;" onclick="addLinkInputField()">+ Add Link Server</button>
-                                </label>
-                                <div id="dynamicLinksContainer">
-                                    <div class="dynamic-link-row">
-                                        <input type="url" class="game-download-url" placeholder="Main Download Server URL (Link ya Kwanza)" required>
-                                    </div>
-                                </div>
-                            </div>
-
+                            <h3 style="color:#3b82f6; margin-top:20px; font-size:16px;">Download Links & Labels</h3>
+    <div id="links-container">
+        <div class="link-input-row" style="display:flex; gap:10px; margin-bottom:10px;">
+            <select class="link-label" style="flex:1; padding:10px; background:#1f2937; border:1px solid #374151; border-radius:6px; color:#fff;">
+                <option value="APK">APK Link</option>
+                <option value="OBB">OBB Link</option>
+                <option value="DATA">DATA Link</option>
+                <option value="FULL GAME">FULL GAME</option>
+            </select>
+            <input type="text" class="link-url" placeholder="https://mediafire.com/file..." style="flex:3; padding:10px; background:#1f2937; border:1px solid #374151; border-radius:6px; color:#fff;">
+            <button type="button" onclick="removeLinkRow(this)" style="background:#ef4444; color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer;">X</button>
+        </div>
+    </div>
+    <button type="button" onclick="addLinkRow()" style="background:#10b981; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; margin-bottom:20px;">+ Add More Link</button>
+                            
                             <div style="margin-top: 25px;">
                                 <button type="submit" class="btn-core"><i class="fa-solid fa-circle-check"></i> Write to Firebase Database Cluster</button>
                             </div>
@@ -665,9 +668,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>#UA-9021</td><td>Menezes_Gamer</td><td><span class="text-green">Online</span></td><td><span class="badge badge-premium">Premium User</span></td><td><button class="btn-sec" style="color:var(--red-accent); border-color:rgba(239,68,68,0.2);" onclick="alert('User Revoked')">Revoke Account</button></td></tr>
-                                    <tr><td>#UA-8492</td><td>Alpha_King</td><td><span class="text-muted">Offline</span></td><td><span class="badge badge-free">Free Tier</span></td><td><button class="btn-sec" style="color:var(--purple-glow);" onclick="alert('User upgraded to premium storage cluster')">Grant Premium Access</button></td></tr>
-                                    <tr><td>#UA-7721</td><td>Kichwa_Chama</td><td><span class="text-green">Online</span></td><td><span class="badge badge-premium">Premium User</span></td><td><button class="btn-sec" style="color:var(--red-accent); border-color:rgba(239,68,68,0.2);" onclick="alert('User Revoked')">Revoke Account</button></td></tr>
+                                    <tr><td>#UA-9021</td><td>TrueAlpha_HimSelf</td><td><span class="text-green">Online</span></td><td><span class="badge badge-premium">Premium User</span></td><td><button class="btn-sec" style="color:var(--red-accent); border-color:rgba(239,68,68,0.2);" onclick="alert('User Revoked')">Revoke Account</button></td></tr>
+                                    <tr><td>#UA-8492</td><td>Gamer_King</td><td><span class="text-muted">Offline</span></td><td><span class="badge badge-free">Free Tier</span></td><td><button class="btn-sec" style="color:var(--purple-glow);" onclick="alert('User upgraded to premium storage cluster')">Grant Premium Access</button></td></tr>
+                                    <tr><td>#UA-7721</td><td>Kichwa_Kikuu</td><td><span class="text-green">Online</span></td><td><span class="badge badge-premium">Premium User</span></td><td><button class="btn-sec" style="color:var(--red-accent); border-color:rgba(239,68,68,0.2);" onclick="alert('User Revoked')">Revoke Account</button></td></tr>
                                 </tbody>
                             </table>
                         </div>
