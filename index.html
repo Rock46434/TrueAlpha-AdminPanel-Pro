@@ -340,6 +340,9 @@
         .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
         .badge-premium { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
         .badge-free { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-approved { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-rejected { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
 
         /* FORMULAS & INPUTS */
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
@@ -461,10 +464,11 @@
 
             <nav class="navigation-menu">
                 <div class="nav-item active" data-target="WebsiteDashboard"><i class="fa-solid fa-chart-pie"></i> WebsiteDashboard</div>
+                <div class="nav-item" data-target="Payments"><i class="fa-solid fa-receipt"></i> Payments Overview</div>
                 <div class="nav-item" data-target="AddGames"><i class="fa-solid fa-square-plus"></i> AddGames</div>
                 <div class="nav-item" data-target="Games"><i class="fa-solid fa-gamepad"></i> Games Management</div>
                 <div class="nav-item" data-target="Users"><i class="fa-solid fa-users-gear"></i> Users Overview</div>
-                <div class="nav-item" data-target="AdminDashboard"><i class="fa-solid fa-shield-halved"></i> AdminDashboard</div>
+                <div class="nav-item" data-target="AdminDashboard"><i class="fa-solid fa-user-shield"></i> AdminDashboard</div>
                 <div class="nav-item" data-target="SystemInfo"><i class="fa-solid fa-circle-info"></i> System Info</div>
                 <div class="nav-item" data-target="ControlPanel"><i class="fa-solid fa-sliders"></i> ControlPanel</div>
                 <div class="nav-item" data-target="Security"><i class="fa-solid fa-terminal"></i> Security Logs</div>
@@ -516,16 +520,16 @@
                             <div class="stat-icon purple-tint"><i class="fa-solid fa-gamepad"></i></div>
                         </div>
                         <div class="stat-card">
-                            <div><p class="card-title">PLATFORM USERS</p><h3 id="dashTotalUsers">100</h3><p class="card-sub text-green">+15.2% Growth</p></div>
-                            <div class="stat-icon cyan-tint"><i class="fa-solid fa-users"></i></div>
+                            <div><p class="card-title">PENDING PAYMENTS</p><h3 id="dashPendingPayments">0</h3><p class="card-sub text-orange">Awaiting Review</p></div>
+                            <div class="stat-icon orange-tint"><i class="fa-solid fa-hourglass-half"></i></div>
                         </div>
                         <div class="stat-card">
-                            <div><p class="card-title">TOTAL REVENUE (TZS)</p><h3 id="dashTotalRevenue">5,000</h3><p class="card-sub text-green">Premium Vault</p></div>
+                            <div><p class="card-title">TOTAL REVENUE (TZS)</p><h3 id="dashTotalRevenue">0</h3><p class="card-sub text-green">Premium Vault</p></div>
                             <div class="stat-icon green-tint"><i class="fa-solid fa-vault"></i></div>
                         </div>
                         <div class="stat-card">
                             <div><p class="card-title">SECURITY STATUS</p><h3>100%</h3><p class="card-sub">Firewall Optimal</p></div>
-                            <div class="stat-icon orange-tint"><i class="fa-solid fa-shield-virus"></i></div>
+                            <div class="stat-icon cyan-tint"><i class="fa-solid fa-shield-virus"></i></div>
                         </div>
                     </div>
 
@@ -557,6 +561,31 @@
                             <div class="control-row"><span>Firebase Cluster Connection</span><span class="text-green" style="font-weight:700;"><i class="fa-solid fa-circle-check"></i> ONLINE</span></div>
                             <div class="control-row"><span>Database Storage Limit</span><span class="text-orange">Unlimited (RTDB)</span></div>
                             <div class="control-row"><span>Payment Webhooks (TZS)</span><span class="badge badge-free">ACTIVE</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-view" id="Payments">
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <h3>Uthibitisho wa Malipo ya Watumiaji</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mtumiaji / Simu</th>
+                                        <th>Game Lililolipiwa</th>
+                                        <th>Transaction ID</th>
+                                        <th>Muda</th>
+                                        <th>Hadhi (Status)</th>
+                                        <th>Kitendo (Action)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paymentsTableBody">
+                                    <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Inapakia taarifa za malipo kutoka Firebase...</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -806,9 +835,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-        import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Config ya Firebase yenye data zako halisi zilizothibitishwa
         const firebaseConfig = {
             apiKey: "AIzaSyDGR_Ej-g6-u3SLlRL_W8_FOsezTKXfpkI",
             authDomain: "truealpha-play-zone.firebaseapp.com",
@@ -820,12 +848,10 @@
             measurementId: "G-9HZP5J137Y"
         };
 
-        // Initialize Instances
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const db = getDatabase(app);
 
-        // Security logger tracker function
         function pushLog(message) {
             const term = document.getElementById('securityTerminalLog');
             if(term) {
@@ -835,10 +861,8 @@
             }
         }
 
-        // Base64 image variable context
         let base64ImageString = "";
 
-        // Read and listen to file upload change
         const fileInput = document.getElementById('inpGameFile');
         if(fileInput) {
             fileInput.addEventListener('change', function(e) {
@@ -857,7 +881,6 @@
             });
         }
 
-        // Form Submit Handler (Adding New Game)
         const deploymentForm = document.getElementById('gameDeploymentForm');
         if(deploymentForm) {
             deploymentForm.addEventListener('submit', function(e) {
@@ -870,7 +893,6 @@
                 const price = access === 'Premium' ? document.getElementById('inpGamePrice').value : "0";
                 const desc = document.getElementById('inpGameDesc').value || "";
 
-                // Kukusanya Download Links zote zilizoongezwa kwa mfumo wa Label + URL Object Array
                 const rows = document.querySelectorAll('#dynamic-links-wrapper .link-row');
                 let linksArr = [];
                 rows.forEach(row => {
@@ -889,7 +911,7 @@
                 pushLog(`Inatuma data ya game mpya: "${title}" kwenda Firebase Cluster...`);
 
                 const gameClusterRef = ref(db, 'games');
-                const newGamePushRef = push(gameClusterRef); // Huongeza game mpya bila kufuta za zamani
+                const newGamePushRef = push(gameClusterRef);
 
                 set(newGamePushRef, {
                     title: title,
@@ -899,18 +921,16 @@
                     price: price,
                     description: desc,
                     image: base64ImageString,
-                    downloadLinks: linksArr, // Safu nzuri ya array ya objects
+                    downloadLinks: linksArr,
                     timestamp: new Date().toISOString()
                 }).then(() => {
                     pushLog(`SUCCESS: Game lililojulikana kama "${title}" limehifadhiwa kiotomatiki.`);
                     alert(`Entity "${title}" deployed successfully live!`);
                     
-                    // Reset Form
                     deploymentForm.reset();
                     document.getElementById('uploadPreview').style.display = "none";
                     base64ImageString = "";
                     
-                    // Reset Dynamic links row to default single row
                     document.getElementById('dynamic-links-wrapper').innerHTML = `
                         <div class="link-row" style="display: flex; gap: 10px; margin-bottom: 10px;">
                             <input type="text" class="link-label" placeholder="Mfano: APK, OBB, DATA" style="flex: 1; padding: 12px;" required>
@@ -919,7 +939,6 @@
                         </div>
                     `;
                     
-                    // Rudi dashboard
                     window.switchView('WebsiteDashboard');
                 }).catch(err => {
                     pushLog(`CRITICAL ERROR: Imeshindwa kuandika data. Maelezo: ${err.message}`);
@@ -928,7 +947,7 @@
             });
         }
 
-        // Live Real-Time Synchronizer & Catalog Renderer
+        // LIVE LISTENERS FOR GAMES
         const databaseLiveRef = ref(db, 'games');
         onValue(databaseLiveRef, (snapshot) => {
             const records = snapshot.val();
@@ -936,17 +955,14 @@
             const catalogTable = document.getElementById('fullCatalogTableBody');
             const totalGamesInp = document.getElementById('dashTotalGames');
 
-            // Kusafisha data zilizopo kwanza kabla ya upya
             dashTable.innerHTML = "";
             catalogTable.innerHTML = "";
 
             if(records) {
                 const keys = Object.keys(records);
                 totalGamesInp.innerText = keys.length;
-                pushLog(`Data Imesawazishwa. Jumla ya magame kwenye seva kuu: ${keys.length}`);
 
                 let counter = 0;
-                // Reverse loop ili mapya yaonekane juu kwanza
                 for(let i = keys.length - 1; i >= 0; i--) {
                     const key = keys[i];
                     const item = records[key];
@@ -955,7 +971,6 @@
                     const badgeMarkup = item.access === 'Premium' ? `<span class="badge badge-premium">Premium</span>` : `<span class="badge badge-free">Free</span>`;
                     const priceValueFormatted = item.access === 'Premium' ? `${parseFloat(item.price).toLocaleString()} TZS` : "0 TZS";
 
-                    // 1. Render Kwenye Dashboard ya Mwanzo (Max 5 items)
                     if(counter <= 5) {
                         const rowDash = `
                             <tr>
@@ -976,11 +991,9 @@
                         dashTable.innerHTML += rowDash;
                     }
 
-                    // 2. Render Kwenye Comprehensive Management Catalog
                     let linksListStrings = "";
                     if(item.downloadLinks && Array.isArray(item.downloadLinks)) {
                         item.downloadLinks.forEach((l, idx) => {
-                            // Angalia kama data ipo kwenye muundo wa object {label, url} au string ya kawaida
                             const targetLabel = l.label ? l.label : `Link #${idx+1}`;
                             const targetUrl = l.url ? l.url : l;
                             linksListStrings += `<a href="${targetUrl}" target="_blank" style="color:var(--cyan-glow); text-decoration:underline; font-size:0.8rem; display:block; margin-bottom:4px;"><i class="fa-solid fa-download"></i> ${targetLabel}</a>`;
@@ -1016,28 +1029,116 @@
                     catalogTable.innerHTML += rowCatalog;
                 }
 
-                // Attach Action Click Elements to Dynamic Purge/Delete buttons securely
                 document.querySelectorAll('.delete-game-trigger').forEach(btn => {
                     btn.addEventListener('click', function() {
                         const targetedId = this.getAttribute('data-id');
-                        if(confirm("Je, una uhakika unataka kufuta kabisa game hili kutoka kwenye database yako ya Firebase?")) {
+                        if(confirm("Je, una uhakika unataka kufuta kabisa game hili kutoka kwenye database yako?")) {
                             remove(ref(db, `games/${targetedId}`)).then(() => {
-                                pushLog(`Entity key execution run handled successfully for ID entry: ${targetedId}`);
-                                alert("Game limefutwa kabisa kwenye database yako.");
-                            }).catch(err => {
-                                alert("Imeshindwa kufuta: " + err.message);
-                            });
+                                alert("Game limefutwa kabisa.");
+                            }).catch(err => { alert("Imeshindwa kufuta: " + err.message); });
+                        }
+                    });
+                });
+            } else {
+                totalGamesInp.innerText = "0";
+                dashTable.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Hakuna magame yaliyopatikana.</td></tr>`;
+                catalogTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Hakuna magame kwenye maktaba.</td></tr>`;
+            }
+        });
+
+        // LIVE REAL-TIME LISTENERS FOR PAYMENTS (AUTOMATED UPDATE SYSTEM)
+        const paymentsLiveRef = ref(db, 'payments');
+        onValue(paymentsLiveRef, (snapshot) => {
+            const records = snapshot.val();
+            const payTable = document.getElementById('paymentsTableBody');
+            const dashPendingField = document.getElementById('dashPendingPayments');
+            const dashRevenueField = document.getElementById('dashTotalRevenue');
+
+            payTable.innerHTML = "";
+
+            if(records) {
+                const keys = Object.keys(records);
+                let pendingCount = 0;
+                let totalRevenue = 0;
+
+                for(let i = keys.length - 1; i >= 0; i--) {
+                    const key = keys[i];
+                    const item = records[key];
+
+                    let statusBadge = "";
+                    let actionButtons = "";
+
+                    // Kuhesabu mapato ya jumla kutokana na yaliyokubaliwa tu (Approved)
+                    if (item.status === "Approved") {
+                        totalRevenue += 2500; // Thamani ya kiwango chako cha malipo
+                        statusBadge = `<span class="badge badge-approved"><i class="fa-solid fa-circle-check"></i> Approved</span>`;
+                        actionButtons = `<span style="color:var(--text-muted); font-size:0.8rem;">Access Granted</span>`;
+                    } else if (item.status === "Rejected") {
+                        statusBadge = `<span class="badge badge-rejected"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`;
+                        actionButtons = `<span style="color:var(--red-accent); font-size:0.8rem;">Rejected</span>`;
+                    } else {
+                        pendingCount++;
+                        statusBadge = `<span class="badge badge-pending"><i class="fa-solid fa-circle-exclamation"></i> Pending</span>`;
+                        actionButtons = `
+                            <button class="btn-sec approve-pay-trigger" data-id="${key}" style="color:var(--green-accent); padding:5px 10px; font-size:0.78rem; border-color:rgba(16,185,129,0.2); margin-right:5px;">
+                                <i class="fa-solid fa-check"></i> Approve
+                            </button>
+                            <button class="btn-sec reject-pay-trigger" data-id="${key}" style="color:var(--red-accent); padding:5px 10px; font-size:0.78rem; border-color:rgba(239,68,68,0.2);">
+                                <i class="fa-solid fa-xmark"></i> Reject
+                            </button>
+                        `;
+                    }
+
+                    const formattedTime = item.timestamp ? new Date(item.timestamp).toLocaleString('sw-TZ') : "N/A";
+
+                    payTable.innerHTML += `
+                        <tr>
+                            <td>
+                                <strong style="display:block; color:#fff;">${item.buyerName || 'Unknown'}</strong>
+                                <small style="color:var(--text-muted); font-size:0.8rem;">${item.buyerPhone || 'N/A'}</small>
+                            </td>
+                            <td><span style="color:var(--purple-glow); font-weight:600;">${item.gameTitle || 'Premium Game'}</span></td>
+                            <td><span style="font-family:monospace; font-weight:bold; color:var(--cyan-glow);">${item.transactionId || 'N/A'}</span></td>
+                            <td><span style="font-size:0.8rem; color:var(--text-muted);">${formattedTime}</span></td>
+                            <td>${statusBadge}</td>
+                            <td>${actionButtons}</td>
+                        </tr>
+                    `;
+                }
+
+                dashPendingField.innerText = pendingCount;
+                dashRevenueField.innerText = totalRevenue.toLocaleString();
+
+                // EVENT TRIGGERS FOR APPROVE
+                document.querySelectorAll('.approve-pay-trigger').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const payId = this.getAttribute('data-id');
+                        if (confirm("Je, umethibitisha muamala huu kwenye simu yako na unataka kumpa mtumiaji ruhusa ya kudownload?")) {
+                            update(ref(db, `payments/${payId}`), { status: "Approved" })
+                            .then(() => { pushLog(`Malipo ya ID ${payId} yameidhinishwa kwa ufanisi.`); })
+                            .catch(err => { alert("Error: " + err.message); });
+                        }
+                    });
+                });
+
+                // EVENT TRIGGERS FOR REJECT
+                document.querySelectorAll('.reject-pay-trigger').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const payId = this.getAttribute('data-id');
+                        if (confirm("Je, unataka kukataa malipo haya?")) {
+                            update(ref(db, `payments/${payId}`), { status: "Rejected" })
+                            .then(() => { pushLog(`Malipo ya ID ${payId} yamekataliwa.`); })
+                            .catch(err => { alert("Error: " + err.message); });
                         }
                     });
                 });
 
             } else {
-                totalGamesInp.innerText = "0";
-                dashTable.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Database node context cluster returns empty array rows.</td></tr>`;
-                catalogTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No records found matching reference path tree.</td></tr>`;
+                dashPendingField.innerText = "0";
+                dashRevenueField.innerText = "0";
+                payTable.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Hakuna taarifa za malipo zilizowasilishwa bado.</td></tr>`;
             }
 
-            // High Tech Preloader Dismissal Function
             setTimeout(() => {
                 const loader = document.getElementById('loader');
                 if(loader) {
@@ -1047,7 +1148,6 @@
             }, 800);
         });
 
-        // Expose function routing configurations directly inside module wrapper scope
         window.switchView = function(viewTargetId) {
             document.querySelectorAll('.dashboard-view').forEach(view => {
                 view.classList.remove('active-view');
@@ -1070,11 +1170,9 @@
             const sideEl = document.getElementById('mainSidebar');
             if(sideEl) sideEl.classList.remove('mobile-open');
         };
-
     </script>
 
     <script>
-        // Tab switching attachment events handlers
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', function() {
                 const destination = this.getAttribute('data-target');
@@ -1084,7 +1182,6 @@
             });
         });
 
-        // Inline condition handler tree for premium dynamic input blocks
         function togglePriceBlock(selectedValue) {
             const priceBlock = document.getElementById('priceInputBlock');
             if(priceBlock) {
@@ -1092,7 +1189,6 @@
             }
         }
 
-        // Ongeza block mpya ya link ya download dynamic (Label + URL)
         function addLinkRow() {
             const wrapper = document.getElementById('dynamic-links-wrapper');
             const newRow = document.createElement('div');
@@ -1107,7 +1203,6 @@
             wrapper.appendChild(newRow);
         }
 
-        // Futa block ya download link dynamic
         function removeLinkRow(button) {
             const row = button.parentElement;
             const wrapper = document.getElementById('dynamic-links-wrapper');
@@ -1118,7 +1213,6 @@
             }
         }
 
-        // Profile updates local processing
         document.getElementById('adminProfileForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const alteredNameValue = document.getElementById('adminDisplayNameInp').value;
@@ -1129,7 +1223,6 @@
             }
         });
 
-        // Mobile navigational drawer handle interceptor click
         const mobToggle = document.getElementById('mobileToggle');
         if(mobToggle) {
             mobToggle.addEventListener('click', function() {
@@ -1137,14 +1230,12 @@
             });
         }
 
-        // Global Search Filtration Algorithm Mechanics over live active table rows
         document.getElementById('globalSearchInput').addEventListener('keyup', function() {
             const stringFilter = this.value.toLowerCase();
             const targetRows = document.querySelectorAll('.custom-table tbody tr');
             
             targetRows.forEach(row => {
                 const combinedRowDataText = row.textContent.toLowerCase();
-                // If text row matches show it, otherwise keep empty hidden layout state
                 if(row.cells.length > 1) { 
                     row.style.display = combinedRowDataText.includes(stringFilter) ? '' : 'none';
                 }
@@ -1153,4 +1244,3 @@
     </script>
 </body>
 </html>
-
