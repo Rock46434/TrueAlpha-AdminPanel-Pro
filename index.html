@@ -40,7 +40,7 @@
             overflow: hidden;
         }
 
-        /* HIGH-TECH LOADING SCREEN */
+        /* HIGH-TECH LOADING SCREEN - RESTORED AS ORIGINAL */
         #loader {
             position: fixed;
             top: 0;
@@ -618,7 +618,6 @@
                                         <option value="Arcade">Arcade</option>
                                         <option value="Emulators">Emulators</option>
                                         <option value="Fighting">Fighting</option>
-                                        <option value="Football"> Football</option>
                                     </select>
                                 </div>
                                 <div class="input-block">
@@ -1047,7 +1046,7 @@
             }
         });
 
-        // LIVE REAL-TIME LISTENERS FOR PAYMENTS (AUTOMATED UPDATE SYSTEM)
+        // LIVE REAL-TIME LISTENERS FOR PAYMENTS
         const paymentsLiveRef = ref(db, 'payments');
         onValue(paymentsLiveRef, (snapshot) => {
             const records = snapshot.val();
@@ -1069,14 +1068,21 @@
                     let statusBadge = "";
                     let actionButtons = "";
 
-                    // Kuhesabu mapato ya jumla kutokana na yaliyokubaliwa tu (Approved)
                     if (item.status === "Approved") {
-                        totalRevenue += 2500; // Thamani ya kiwango chako cha malipo
+                        totalRevenue += 2500;
                         statusBadge = `<span class="badge badge-approved"><i class="fa-solid fa-circle-check"></i> Approved</span>`;
-                        actionButtons = `<span style="color:var(--text-muted); font-size:0.8rem;">Access Granted</span>`;
+                        actionButtons = `
+                            <button class="btn-sec delete-pay-trigger" data-id="${key}" style="color:var(--red-accent); padding:5px 10px; font-size:0.78rem; border-color:rgba(239,68,68,0.2);">
+                                <i class="fa-solid fa-trash-can"></i> Delete
+                            </button>
+                        `;
                     } else if (item.status === "Rejected") {
                         statusBadge = `<span class="badge badge-rejected"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`;
-                        actionButtons = `<span style="color:var(--red-accent); font-size:0.8rem;">Rejected</span>`;
+                        actionButtons = `
+                            <button class="btn-sec delete-pay-trigger" data-id="${key}" style="color:var(--red-accent); padding:5px 10px; font-size:0.78rem; border-color:rgba(239,68,68,0.2);">
+                                <i class="fa-solid fa-trash-can"></i> Delete
+                            </button>
+                        `;
                     } else {
                         pendingCount++;
                         statusBadge = `<span class="badge badge-pending"><i class="fa-solid fa-circle-exclamation"></i> Pending</span>`;
@@ -1130,6 +1136,21 @@
                             update(ref(db, `payments/${payId}`), { status: "Rejected" })
                             .then(() => { pushLog(`Malipo ya ID ${payId} yamekataliwa.`); })
                             .catch(err => { alert("Error: " + err.message); });
+                        }
+                    });
+                });
+
+                // EVENT TRIGGERS FOR DELETE PAYMENTS
+                document.querySelectorAll('.delete-pay-trigger').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const payId = this.getAttribute('data-id');
+                        if (confirm("Je, una uhakika unataka kufuta kabisa kumbukumbu ya muamala huu kutoka kwenye database yako?")) {
+                            remove(ref(db, `payments/${payId}`))
+                            .then(() => { 
+                                pushLog(`Muamala wa ID ${payId} umefutwa kabisa kutoka kwenye Firebase.`);
+                                alert("Muamala umefutwa kwa mafanikio.");
+                            })
+                            .catch(err => { alert("Imeshindwa kufuta muamala: " + err.message); });
                         }
                     });
                 });
